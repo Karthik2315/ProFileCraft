@@ -40,6 +40,20 @@ const DashBoard = () => {
     },500)
   }
 
+  const editTitle = async(e) => {
+    e.preventDefault();
+    setTimeout(() => {
+      setEditResumeid('');
+    },500)
+  }
+
+  const deleteResume = async(resumeId) => {
+    const confirm = window.confirm("Are you sure you want to delete this resume ?")
+    if(confirm){
+    setAllResumes(prev => prev.filter(resume => resume._id !== resumeId))
+    }
+  }
+
   useEffect(() => {
     loadAllResumes();
   },[])
@@ -63,7 +77,7 @@ const DashBoard = () => {
             const baseColor = colors[index % colors.length];
             return (
               <button
-                key={index}
+                key={index} onClick={() => navigate(`/app/builder/${resume._id}`)} 
                 className='relative w-full sm:max-w-36 h-48 flex
                   flex-col items-center justify-center rounded-lg gap-2 border group
                   hover:shadow-lg transition-all duration-300 cursor-pointer'
@@ -75,9 +89,9 @@ const DashBoard = () => {
                 <FilePenLineIcon className='size-7 group-hover:scale-105 transition-all' style={{color:baseColor}} />
                 <p className='text-sm group-hover:scale-105 transition-all px-2 text-center' >{resume.title}</p>
                 <p className='absolute bottom-1 text-[11px] text-slate-500 group-hover:text-slate-600 transition-all duration-300 px-2 text-center' style={{color:baseColor+'90'}}>Updated on {new Date(resume.updatedAt).toLocaleDateString()}</p>
-                <div className='absolute top-1 right-1 group-hover:flex items-center hidden '>
-                  <TrashIcon className='size-7 p-1.5 hover:bg-white/50 rounded text-slate-700 transition-colors'/>
-                  <PencilIcon className='size-7 p-1.5 hover:bg-white/50 rounded text-slate-700 transition-colors' />
+                <div onClick={e => e.stopPropagation()} className='absolute top-1 right-1 group-hover:flex items-center hidden '>
+                  <TrashIcon className='size-7 p-1.5 hover:bg-white/50 rounded text-slate-700 transition-colors' onClick={() => deleteResume(resume._id)}/>
+                  <PencilIcon className='size-7 p-1.5 hover:bg-white/50 rounded text-slate-700 transition-colors' onClick={() => {setEditResumeid(resume._id);setTitle(resume.title)}} />
                 </div>
               </button>
             );
@@ -119,6 +133,18 @@ const DashBoard = () => {
               <button className='px-10 py-2 text-white bg-red-600 rounded-3xl cursor-pointer hover:scale-105 transition-all duration-300 active:scale-95'>Upload Resume</button>
               <X className='absolute top-4 right-4 w-5 text-slate-400 hover:text-slate-500 cursor-pointer transition-colors' onClick={() => {
                 setShowUploadResume(false);setTitle('')
+              }}/>
+            </div>
+          </form>
+        )}
+        {editResumeid && (
+          <form onSubmit={editTitle} className='fixed inset-0 bg-black/70 backdrop-blur bg-opacity-50 z-10 flex items-center justify-center' onClick={() => setEditResumeid('')}>
+            <div className='relative bg-white flex flex-col p-4 rounded-2xl w-[400px]' onClick={e => e.stopPropagation()}>
+              <h2 className='text-[20px] mb-3'>Edit Resume title</h2>
+              <input type="text" placeholder='Enter Resume Title' className='w-full px-4 py-2 mb-4 border border-gray-400 focus:outline-none focus:border-red-600 focus:border-2  rounded-2xl placeholder:text-gray-500 mb-3' required onChange={(e)=>setTitle(e.target.value)} value={title}/>
+              <button className='px-10 py-2 text-white bg-red-600 rounded-3xl cursor-pointer hover:scale-105 transition-all duration-300 active:scale-95'>Update</button>
+              <X className='absolute top-4 right-4 w-5 text-slate-400 hover:text-slate-500 cursor-pointer transition-colors' onClick={() => {
+                setEditResumeid('')
               }}/>
             </div>
           </form>
