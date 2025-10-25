@@ -9,6 +9,10 @@ import { dummyResumeData } from '../assets/assets'
 import { User,FileText,Briefcase,GraduationCap,FolderIcon,Sparkles,Palette } from 'lucide-react'
 import PersonalInfoForm from '../components/PersonalInfoForm'
 import ResumePreivew from '../components/ResumePreivew'
+import Template_Selector from '../components/Template_Selector'
+import AccentColor_Selector from '../components/AccentColor_Selector'
+import ProfessionalSummaryForm from '../components/ProfessionalSummaryForm'
+import ExperienceForm from '../components/ExperienceForm'
 
 const ResumeBuilder = () => {
   const {resumeId} = useParams();
@@ -81,8 +85,10 @@ const ResumeBuilder = () => {
               <hr className='absolute top-0 left-0 h-1 bg-gradient-to-r from-red-500 to-red-600 border-none transition-all duration-2000' style={{width:`${activeSectionIndex *100 /(sections.length - 1)}%`}} />
               <div className='flex justify-between items-center mb-6 border-b border-gray-500 py-3'>
                 <div className='flex gap-2'>
-                  <button className='flex gap-2 items-center px-3 py-2 bg-blue-200/40 rounded-md text-blue-600 cursor-pointer border border-transparent hover:border-blue-700 text-sm hover:scale-105 transition-all active:scale-95'><LayoutTemplate className='size-5'/> Templates</button>
-                  <button className='flex gap-2 items-center px-3 py-2 bg-violet-200/40 rounded-md text-violet-600 cursor-pointer border border-transparent hover:border-violet-700 text-sm hover:scale-105 transition-all active:scale-95'><Palette className='size-5'/> Accent</button>
+                  <Template_Selector selectedTemplate={resumeData.template} onChange={(selectedTemplate) => setResumeData(prev => ({...prev,template:selectedTemplate}))} />
+                  <AccentColor_Selector selectedAccentColor={resumeData.accent_color} onChange={(selectedAccentColor) => setResumeData(prev => ({
+                    ...prev,accent_color:selectedAccentColor
+                  }))} />
                 </div>
                 <div className='flex gap-3'>
                 {activeSectionIndex > 0 && 
@@ -101,13 +107,17 @@ const ResumeBuilder = () => {
               <div>
                 {activeSection.id === "personal" &&
                 <PersonalInfoForm data={resumeData['personal_info']} onChange={(data) => setResumeData(prev => ({...prev,personal_info:data}))}/> }
+                {activeSection.id === "summary" && 
+                <ProfessionalSummaryForm data={resumeData['professional_summary']} onChange={(summary) => setResumeData(prev=> ({...prev,professional_summary:summary}))} setResumeData={setResumeData} /> }
+                {activeSection.id === "experience" && 
+                <ExperienceForm />}
               </div>
             </div>
           </div>
           {/* right form */} 
-          <div>
+          <div className='lg:col-span-7 max-lg:mt-6'>
             <div>
-              <ResumePreivew />
+              <ResumePreivew data={resumeData} template={resumeData.template} accentColor={resumeData.accent_color} />
             </div>
           </div>
         </div>
