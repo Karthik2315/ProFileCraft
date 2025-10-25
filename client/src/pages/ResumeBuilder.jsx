@@ -56,7 +56,6 @@ const ResumeBuilder = () => {
     loadExistingResume();
   },[]);
 
-  console.log(resumeData)
 
   const navigate = useNavigate();
   const [isPrivate,setIsPrivate] = useState(true)
