@@ -7,6 +7,8 @@ import { Eye } from 'lucide-react'
 import { Share2 } from 'lucide-react'
 import { dummyResumeData } from '../assets/assets'
 import { User,FileText,Briefcase,GraduationCap,FolderIcon,Sparkles,Palette } from 'lucide-react'
+import PersonalInfoForm from '../components/PersonalInfoForm'
+import ResumePreivew from '../components/ResumePreivew'
 
 const ResumeBuilder = () => {
   const {resumeId} = useParams();
@@ -50,10 +52,12 @@ const ResumeBuilder = () => {
     loadExistingResume();
   },[]);
 
+  console.log(resumeData)
+
   const navigate = useNavigate();
   const [isPrivate,setIsPrivate] = useState(true)
   return (
-    <div className='flex flex-col bg-white/20'>
+    <div className='flex flex-col bg-white/20 min-h-screen'>
     <div className='flex justify-between px-25'>
       <div className='flex mt-8 gap-2 group cursor-pointer' onClick={()=>navigate('/app')}>
         <ArrowLeft className='w-4 text-slate-400 group-hover:text-gray-600' />
@@ -86,17 +90,25 @@ const ResumeBuilder = () => {
                     <ChevronLeft className='size-5'/>
                     <p className='text-md text-gray-500'>Prev</p>
                   </div> }
+                {activeSectionIndex < (sections.length - 1) && 
                   <div className='flex gap-1 items-center cursor-pointer' onClick={() => setActiveSectionIndex(prev => prev+1)}>
                     <p className='text-md text-gray-500'>Next</p>
                     <ChevronRight className='size-5'/>
-                  </div>
+                  </div> }
                 </div>
+              </div>
+              {/* form content */}
+              <div>
+                {activeSection.id === "personal" &&
+                <PersonalInfoForm data={resumeData['personal_info']} onChange={(data) => setResumeData(prev => ({...prev,personal_info:data}))}/> }
               </div>
             </div>
           </div>
           {/* right form */} 
           <div>
-
+            <div>
+              <ResumePreivew />
+            </div>
           </div>
         </div>
     </div>
