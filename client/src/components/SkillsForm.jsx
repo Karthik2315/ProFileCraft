@@ -33,10 +33,10 @@ const SkillsForm = ({data,onChange}) => {
         <button className='flex items-center   gap-1 bg-blue-500 rounded-md px-3 py-1 text-white hover:scale-105 transition-all duration-300 active:scale-95 cursor-pointer' onClick={() => addSkill()}><Plus className='size-5'/>Add</button>
       </div>
       {data.length>0 ? (
-        <div className='flex flex-wrap gap-2'>
+        <div className='flex flex-wrap gap-2 mt-5 mb-5'>
           {data.map((skill,index) => {
             return (
-              <div key={index} className='flex items-center gap-2 bg-blue-500 rounded-lg px-1 py-1'>
+              <div key={index} className='flex items-center gap-2 bg-blue-500 rounded-lg px-2 py-1'>
                 <p className='text-[12px] text-white'>{skill}</p>
                 <X className='size-4 text-white cursor-pointer' onClick={() => removeSkill(index)}/>
               </div>

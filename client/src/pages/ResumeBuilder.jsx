@@ -32,6 +32,7 @@ const ResumeBuilder = () => {
   accent_color: "#3B82F6",
   public: false,
   });
+  const navigate = useNavigate();
   const [activeSectionIndex,setActiveSectionIndex] = useState(0);
   const [removeBackGround,setRemoveBackGround] = useState(false);
 
@@ -59,9 +60,25 @@ const ResumeBuilder = () => {
     loadExistingResume();
   },[]);
 
+  const resumeVisibility = () => {
+    setResumeData({...resumeData,public:!resumeData.public})
+  }
 
-  const navigate = useNavigate();
-  const [isPrivate,setIsPrivate] = useState(true)
+  const handleShare = () => {
+    const frontendUrl = window.location.href.split('/app/')[0];
+    const resumeUrl = frontendUrl + '/view/' + resumeId;
+    if(navigator.share)
+    {
+      navigator.share({url:resumeUrl,text:"My Resume",})
+    } else {
+      alert("Share not supported on this browser.")
+    }
+  }
+
+  const handleDownload = () => {
+    window.print();
+  }
+
   return (
     <div className='flex flex-col bg-white/20 min-h-screen'>
     <div className='flex justify-between px-25'>
@@ -70,12 +87,12 @@ const ResumeBuilder = () => {
         <p className='text-slate-400 group-hover:text-gray-600 cursor-pointer'>Back to DashBoard</p>
       </div>
       <div className='flex gap-2 mt-8'>
-        {!isPrivate && (
-          <button className='flex gap-2 text-sm items-center bg-blue-200 rounded-md px-4 py-1 text-blue-600 cursor-pointer border border-transparent hover:border-blue-600 hover:scale-105 active:scale-95 transition-all duration-500'><Share2 className='w-4'/> Share</button>
+        {resumeData.public && (
+          <button className='flex gap-2 text-sm items-center bg-blue-200 rounded-md px-4 py-1 text-blue-600 cursor-pointer border border-transparent hover:border-blue-600 hover:scale-105 active:scale-95 transition-all duration-500' onClick={() => handleShare()}><Share2 className='w-4'/> Share</button>
 
         )}
-        <button className='flex gap-2 text-sm items-center bg-violet-200 rounded-md px-4 py-1 text-violet-600 cursor-pointer border border-transparent hover:border-violet-600 hover:scale-105 active:scale-95 transition-all duration-500' onClick={() => setIsPrivate(prev => !prev)}>{isPrivate ? <EyeOff className='w-4'/> : <Eye className='w-4' />} {isPrivate ? 'Private' : 'Public' }</button>
-        <button className='flex gap-2 text-sm items-center bg-green-200 rounded-md px-4 py-1 text-green-600 cursor-pointer border border-transparent hover:border-green-600 hover:scale-105 active:scale-95 transition-all duration-500'><Download className='w-4'/> Download</button>
+        <button className='flex gap-2 text-sm items-center bg-violet-200 rounded-md px-4 py-1 text-violet-600 cursor-pointer border border-transparent hover:border-violet-600 hover:scale-105 active:scale-95 transition-all duration-500' onClick={() => resumeVisibility()}>{resumeData.public ? <Eye className='w-4'/> : <EyeOff className='w-4' />} {resumeData.public ? 'Public' : 'Private' }</button>
+        <button className='flex gap-2 text-sm items-center bg-green-200 rounded-md px-4 py-1 text-green-600 cursor-pointer border border-transparent hover:border-green-600 hover:scale-105 active:scale-95 transition-all duration-500' onClick={() => handleDownload()}><Download className='w-4'/> Download</button>
       </div>
     </div>
     <div className='w-full mx-auto px-4 pb-8 mt-5'>
@@ -120,6 +137,9 @@ const ResumeBuilder = () => {
                 {activeSection.id === "skills" && 
                 <SkillsForm data={resumeData['skills']} onChange={(data) => setResumeData(prev=> ({...prev,skills:data}))}/>}
               </div>
+              <button className='mt-6 mb-3 flex items-center px-4 py-2 bg-green-200 text-green-500  rounded-xl cursor-pointer hover:scale-105 transition-all duration-300 active:scale-95'>
+                Save Changes
+              </button>
             </div>
           </div>
           {/* right form */} 
