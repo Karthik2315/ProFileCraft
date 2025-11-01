@@ -1,8 +1,7 @@
 import { BriefcaseBusiness, Delete, Plus, Sparkles, Trash } from 'lucide-react'
-import React, { useState } from 'react'
+import React from 'react'
 
 const ExperienceForm = ({data,onChange}) => {
-  const [experienceCount,setExperienceCount] = useState(0);
   const addExperience = () => {
     const newExperience = {
       company:"",
