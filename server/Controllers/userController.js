@@ -1,0 +1,96 @@
+import User from "../models/userModel";
+import jwt from 'jsonwebtoken';
+
+const generateJWT = (userId) => {
+  const token = jwt.sign({userId},process.env.JWT_SECRET,{expiresIn:'3d'})
+  return token;
+}
+
+
+export const register = async(req,res) => {
+  try {
+    const {password,email,name} = req.body;
+    if(!name || !password || !email)
+    {
+      return res.status(400).json({
+        success:false,
+        message:"Missing required fields"
+      });
+    }
+    const user = await User.findOne({email});
+    if(user)
+    {
+      return res.status(400).json({
+        success:false,
+        message:"User already Exists"
+      })
+    }
+    const newUser = await User.create({
+      name,email,password
+    })
+
+    const token = generateJWT(newUser._id);
+    res.cookie("token",token,{
+      httpOnly:true,
+      secure:false,
+      sameSite:"Lax",
+      maxAge:3*24*60*60*1000
+    })
+    return res.status(200).json({
+      success:true,
+      message:"User Created Successfully",
+      user:newUser
+    })
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      success:false,
+      message:"Server Error"
+    })
+  }
+}
+
+export const login = async(req,res) => {
+  try {
+    const {password,email} = req.body;
+    if(!password || !email)
+    {
+      return res.status(400).json({
+        success:false,
+        message:"Missing required fields"
+      })
+    }
+    const user = await User.findOne({email});
+    if(!user)
+    {
+      return res.status(400).json({
+        success:false,
+        message:"User doesn't exist"
+      })
+    }
+    if(!user.comparePassword(password))
+    {
+      return res.status(400).json({
+        success:false,
+        message:"Invalid password"
+      });
+    }
+    const token = generateJWT(user._id);
+    res.cookie("token",token,{
+      httpOnly:true,
+      secure:false,
+      sameSite:"Lax",
+      maxAge:3*24*60*60*1000
+    })
+    return res.status(200).json({
+      success:true,
+      message:"User Login Successfully"
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      success:false,
+      message:"Server Error"
+    })
+  }
+}

@@ -28,7 +28,8 @@ const userSchema = new mongoose.Schema({
         return  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(v);
       },
       message:"Password must contain upperCase,lowerCase,number and special character"
-    }
+    },
+    select:false
   },
   reviews:{
     type:[String],
@@ -49,4 +50,4 @@ userSchema.methods.comparePassword = function(password){
 
 const User = mongoose.model("User",userSchema);
 
-return User;
+export default User;
