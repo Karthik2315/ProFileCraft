@@ -1,3 +1,4 @@
+import Resume from "../models/resumeModel";
 import User from "../models/userModel";
 import jwt from 'jsonwebtoken';
 
@@ -115,6 +116,22 @@ export const getUserById = async(req,res) => {
     return res.status(500).json({
       success:false,
       message:"Server Error"
+    })
+  }
+}
+
+export const getUserResumes = async(req,res) => {
+  try {
+    const userId = req.userId;
+    const resumes = await Resume.find({userId});
+    return res.status(200).json({
+      success:true,
+      resumes
+    })
+  } catch (error) {
+    res.status(500).json({
+      success:false,
+      message:error.message
     })
   }
 }
