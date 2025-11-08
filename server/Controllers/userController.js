@@ -1,5 +1,5 @@
-import Resume from "../models/resumeModel";
-import User from "../models/userModel";
+import Resume from "../models/resumeModel.js";
+import User from "../models/userModel.js";
 import jwt from 'jsonwebtoken';
 
 const generateJWT = (userId) => {
