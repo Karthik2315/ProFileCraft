@@ -18,7 +18,7 @@ const Hero = () => {
           <button className='bg-red-500 text-white rounded-4xl px-7 py-2 cursor-pointer hover:scale-105 active:scale-90 transition-all duration-500' onClick={() => navigate('/app')} hidden={user}>Get Started</button>
           <button className='border rounded-4xl px-6 py-2 cursor-pointer hover:scale-105 active:scale-90 transition-all duration-500' onClick={()=>{
             setTimeout(() => {
-              navigate('/login')
+              navigate('/app')
             },700)
           }} hidden={user}>Login</button>
           <button className='flex-1 bg-red-500 text-white rounded-4xl px-7 py-2 cursor-pointer hover:scale-105 active:scale-90 transition-all duration-500 ml-11' onClick={() => navigate('/app')} hidden={!user}>Dashboard</button>
