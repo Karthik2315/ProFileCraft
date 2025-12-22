@@ -45,7 +45,6 @@ export const register = async(req,res) => {
   } catch (error) {
     console.log(error.message);
     if (error.name === "ValidationError") {
-      // Extract the first validation message
       const messages = Object.values(error.errors).map(err => err.message);
       return res.status(400).json({ success:false, message: messages[0] }); 
     }
@@ -66,7 +65,7 @@ export const login = async(req,res) => {
         message:"Missing required fields"
       })
     }
-    const user = await User.findOne({email});
+    const user = await User.findOne({email}).select("+password");
     if(!user)
     {
       return res.status(400).json({

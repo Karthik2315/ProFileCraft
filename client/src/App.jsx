@@ -47,6 +47,7 @@ const App = () => {
           <Route index element={<DashBoard />} />
           <Route path='builder/:resumeId' element={<ResumeBuilder />} />
         </Route>
+        <Route path='/login' element={<Login/>} />
         <Route path='/view/:resumeId' element={<Preview />} />
       </Routes>
     </>

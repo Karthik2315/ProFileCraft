@@ -1,8 +1,17 @@
 import React from 'react'
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../app/features/authSlice';
 
 const Navbar = () => {
-  const user = {name : "Karthik"}
+  const {user} = useSelector(state => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/');
+  }
   return (
     <div className='flex justify-between shadow-lg px-8 py-5'>
       <nav>
@@ -12,7 +21,7 @@ const Navbar = () => {
       </nav>
       <div className='flex items-center gap-8 px-10'>
         <p className='text-gray-500 text-[20px]'>Hi, {user?.name}</p>
-        <button className='px-8 py-2 bg-red-500 text-white rounded-3xl cursor-pointer hover:scale-105 transition-all duration-300 active:scale-95'>LogOut</button>
+        <button className='px-8 py-2 bg-red-500 text-white rounded-3xl cursor-pointer hover:scale-105 transition-all duration-300 active:scale-95' onClick={() => handleLogout()}>LogOut</button>
       </div>
     </div>
   )
