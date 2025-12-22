@@ -9,7 +9,6 @@ import aiRouter from './routes/aiRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
 const corsOrigin = ["http://localhost:5173"]
 app.use(cors({
   origin:corsOrigin,
@@ -18,6 +17,7 @@ app.use(cors({
 app.use(cookieParser());
 await connectDB();
 
+app.get('/',(req,res)=>res.send('server is live'))
 app.use('/api/users',userRouter);
 app.use('/api/resumes',resumeRouter);
 app.use('/api/ai',aiRouter);
