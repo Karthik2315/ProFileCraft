@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import {FilePenLineIcon, PencilIcon, PlusIcon, TrashIcon, UploadCloudIcon} from 'lucide-react'
+import {FilePenLineIcon, LoaderCircleIcon, PencilIcon, PlusIcon, TrashIcon, UploadCloudIcon} from 'lucide-react'
 import { dummyResumeData } from '../assets/assets';
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
+import {useSelector} from 'react-redux'
+import {toast} from 'react-hot-toast';
+import axios from 'axios';
+import pdfToText from 'react-pdftotext';
 const DashBoard = () => {
+  const {user} = useSelector(state =>  state.auth)
   const colors = [
   "#9333ea",
   "#d97706",
@@ -15,7 +19,12 @@ const DashBoard = () => {
 
   const [allResumes,setAllResumes] = useState([]);
   const loadAllResumes = async() => {
-    setAllResumes(dummyResumeData)
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/users/resumes`,{withCredentials:true})
+      setAllResumes(res.data.resumes);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message)
+    }
   }
   const [showCreateResume,setShowCreateResume] = useState(false);
   const [showUploadResume,setShowUploadResume] = useState(false);
@@ -23,34 +32,61 @@ const DashBoard = () => {
   const [resume,setResume] = useState(null);
   const [editResumeid,setEditResumeid] = useState(null);
   const navigate = useNavigate();
+  const [isLoading,setIsLoading] = useState(false);
 
   const createResume = async(e) =>{
-    e.preventDefault();
-    setTimeout(() => {
+    try {
+      e.preventDefault();
+      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/resumes/create`,{title},{withCredentials:true})
+      setAllResumes([...allResumes,res.data.resume]);
+      setTitle('');
       setShowCreateResume(false);
-      navigate('/app/builder/res123')
-    },500)
+      navigate(`/app/builder/${res.data.resume._id}`)
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message)
+    }
   }
 
   const uploadResume = async(e) =>{
     e.preventDefault();
-    setTimeout(() => {
+    setIsLoading(true)
+    try {
+      const resumeText = await pdfToText(resume);
+      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/ai/upload-resume`,{title,resumeText},{withCredentials:true});
+      setTitle('');
+      setResume(null);
       setShowUploadResume(false);
-      navigate('/app/builder/res123')
-    },500)
+      setAllResumes([...allResumes,res.data.resume])
+      navigate(`/app/builder/${res.data.resumeId}`)
+    } catch (error) {
+        toast.error(error?.response?.data?.message || error.message)
+    }
+    setIsLoading(false);
   }
 
   const editTitle = async(e) => {
-    e.preventDefault();
-    setTimeout(() => {
+    try {
+      e.preventDefault();
+      const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/api/resumes/update`,{resumeId:editResumeid,resumeData:{title}},{withCredentials:true});
+      setAllResumes(allResumes.map(resume => resume._id === editResumeid ? {...resume,title}:resume))
+      setTitle('');
       setEditResumeid('');
-    },500)
+      toast.success(res.data.message);
+    } catch (error) {
+        toast.error(error?.response?.data?.message || error.message)
+    }
   }
 
   const deleteResume = async(resumeId) => {
-    const confirm = window.confirm("Are you sure you want to delete this resume ?")
-    if(confirm){
-    setAllResumes(prev => prev.filter(resume => resume._id !== resumeId))
+    try {
+      const confirm = window.confirm("Are you sure you want to delete this resume ?")
+      if(confirm){
+        const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/resumes/delete/${resumeId}`,{withCredentials:true});
+        setAllResumes(allResumes.filter(resume => resume._id !== resumeId));
+        toast.success(res.data.message)
+      }
+    } catch (error) {
+        toast.error(error?.response?.data?.message || error.message)
     }
   }
 
@@ -130,7 +166,8 @@ const DashBoard = () => {
                 </label>
                 <input type="file" id="resume-input" accept='.pdf' hidden onChange={(e) => setResume(e.target.files[0])} />
               </div>
-              <button className='px-10 py-2 text-white bg-red-600 rounded-3xl cursor-pointer hover:scale-105 transition-all duration-300 active:scale-95'>Upload Resume</button>
+              <button disabled={isLoading} className='px-10 py-2 text-white bg-red-600 rounded-3xl cursor-pointer hover:scale-105 transition-all duration-300 active:scale-95 flex items-center justify-center gap-2'>{isLoading && <LoaderCircleIcon className='animate-spin size-4 text-white'/>}
+              {isLoading ? 'Uploading...':'Upload Resume'}</button>
               <X className='absolute top-4 right-4 w-5 text-slate-400 hover:text-slate-500 cursor-pointer transition-colors' onClick={() => {
                 setShowUploadResume(false);setTitle('')
               }}/>
