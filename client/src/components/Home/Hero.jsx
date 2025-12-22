@@ -13,7 +13,7 @@ const Hero = () => {
           <p className='hover:text-red-500 cursor-pointer transition'>contact</p>
         </div>
         <div className='flex gap-5 '>
-          <button className='bg-red-500 text-white rounded-4xl px-7 py-2 cursor-pointer hover:scale-105 active:scale-90 transition-all duration-500'>Get Started</button>
+          <button className='bg-red-500 text-white rounded-4xl px-7 py-2 cursor-pointer hover:scale-105 active:scale-90 transition-all duration-500' onClick={() => navigate('/app')}>Get Started</button>
           <button className='border rounded-4xl px-6 py-2 cursor-pointer hover:scale-105 active:scale-90 transition-all duration-500' onClick={()=>{
             setTimeout(() => {
               navigate('/login')
@@ -30,7 +30,7 @@ const Hero = () => {
         <p className='mt-6 text-[19px] max-w-md'>
           Create, edit and download professional resumes with AI-powered assistance
         </p>
-        <button className='bg-red-500 text-white px-6 py-2 rounded-4xl hover:scale-105 transition-all duration-500 active:scale-90 mt-5 cursor-pointer'>Get Started ➜</button>
+        <button className='bg-red-500 text-white px-6 py-2 rounded-4xl hover:scale-105 transition-all duration-500 active:scale-90 mt-5 cursor-pointer' onClick={() => navigate('/app')}>Get Started ➜</button>
       </div>
       
 
