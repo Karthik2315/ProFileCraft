@@ -16,6 +16,8 @@ import ExperienceForm from '../components/ExperienceForm'
 import EducationForm from '../components/EducationForm'
 import ProjectForm from '../components/ProjectForm'
 import SkillsForm from '../components/SkillsForm'
+import axios from 'axios';
+import {toast} from 'react-hot-toast';
 
 const ResumeBuilder = () => {
   const {resumeId} = useParams();
@@ -37,11 +39,15 @@ const ResumeBuilder = () => {
   const [removeBackGround,setRemoveBackGround] = useState(false);
 
   const loadExistingResume = async() => {
-    const resume = dummyResumeData.find(resume => resume._id === resumeId);
-    if(resume)
-    {
-      setResumeData(resume)
-      document.title = resume.title;
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/resumes/get/${resumeId}`,{withCredentials:true});
+      if(res.data.resume)
+      {
+        setResumeData(res.data.resume)
+        document.title = res.data.resume.title
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -60,8 +66,17 @@ const ResumeBuilder = () => {
     loadExistingResume();
   },[]);
 
-  const resumeVisibility = () => {
-    setResumeData({...resumeData,public:!resumeData.public})
+  const resumeVisibility = async() => {
+    try {
+      const formData = new FormData()
+      formData.append("resumeId",resumeId)
+      formData.append("resumeData",JSON.stringify({public:!resumeData.public}))
+      const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/api/resumes/update`,formData,{withCredentials:true});
+      setResumeData({...resumeData,public:!resumeData.public})
+      toast.success(res.data.message);
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const handleShare = () => {
@@ -77,6 +92,26 @@ const ResumeBuilder = () => {
 
   const handleDownload = () => {
     window.print();
+  }
+
+  const saveResume = async() => {
+    try {
+      let updatedResumeData = structuredClone(resumeData);
+      if(typeof resumeData.personal_info.image === 'object')
+      {
+        delete updatedResumeData.personal_info.image
+      }
+      const formData = new FormData();
+      formData.append("resumeId",resumeId)
+      formData.append("resumeData",JSON.stringify(updatedResumeData))
+      removeBackGround && formData.append("removeBackground","yes");
+      typeof resumeData.personal_info.image === 'object' && formData.append("image",resumeData.personal_info.image)
+      const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/api/resumes/update`,formData,{withCredentials:true});
+      setResumeData(res.data.resume);
+      toast.success(res.data.message)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -137,7 +172,7 @@ const ResumeBuilder = () => {
                 {activeSection.id === "skills" && 
                 <SkillsForm data={resumeData['skills']} onChange={(data) => setResumeData(prev=> ({...prev,skills:data}))}/>}
               </div>
-              <button className='mt-6 mb-3 flex items-center px-4 py-2 bg-green-200 text-green-500  rounded-xl cursor-pointer hover:scale-105 transition-all duration-300 active:scale-95'>
+              <button className='mt-6 mb-3 flex items-center px-4 py-2 bg-green-200 text-green-500  rounded-xl cursor-pointer hover:scale-105 transition-all duration-300 active:scale-95' onClick={() => {toast.promise(saveResume,{loading:'Saving....'})}}>
                 Save Changes
               </button>
             </div>
