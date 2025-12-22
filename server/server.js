@@ -25,7 +25,6 @@ app.get('/api/protected', (req,res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     res.status(200).json({ success:true, message:"Authorized", user: decoded });
   } catch(err) {
-    console.log(err)
     res.status(401).json({ success:false, message:"Unauthorized" });
   }
 });

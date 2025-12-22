@@ -27,9 +27,9 @@ const userSchema = new mongoose.Schema({
       validator: function(v) {
         return  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(v);
       },
-      message:"Password must contain upperCase,lowerCase,number and special character"
+      message:"Password must contain upper and lower case numbers and special character"
     },
-    select:false
+    select:false  
   },
   reviews:{
     type:[String],

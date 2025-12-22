@@ -9,6 +9,7 @@ import Preview from './pages/Preview.jsx'
 import { useDispatch } from 'react-redux'
 import axios from 'axios';
 import { login, setLoading } from './app/features/authSlice.js'
+import {Toaster} from 'react-hot-toast';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -39,6 +40,7 @@ const App = () => {
   },[]);
   return (
     <>
+    <Toaster />
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='app' element={<Layout />}>

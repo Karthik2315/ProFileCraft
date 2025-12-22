@@ -44,6 +44,11 @@ export const register = async(req,res) => {
     })
   } catch (error) {
     console.log(error.message);
+    if (error.name === "ValidationError") {
+      // Extract the first validation message
+      const messages = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ success:false, message: messages[0] }); 
+    }
     res.status(500).json({
       success:false,
       message:"Server Error"
@@ -85,7 +90,8 @@ export const login = async(req,res) => {
     })
     return res.status(200).json({
       success:true,
-      message:"User Login Successfully"
+      message:"User Login Successfully",
+      user
     });
   } catch (error) {
     console.log(error.message);
