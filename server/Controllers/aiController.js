@@ -1,3 +1,4 @@
+import ai from "../config/ai.js";
 import Resume from "../models/resumeModel.js";
 
 
@@ -7,7 +8,7 @@ export const enhanceProfessionalSummary = async(req,res) => {
       if(!userContent){
         return res.status(400).json({message: "User content is required"});
       }
-      const response = await openai.chat.completions.create({
+      const response = await ai.chat.completions.create({
           model: process.env.OPENAI_MODEL,
           messages: [
               { role: "system", content: "You are an expert in resume writing. Your task is to enhance the professional summary of a resume. The summary should be 1-2 sentences also highlighting key skills, experience, and career objectives. Make it compelling and ATS-friendly, and only return text no options or anything else." },
@@ -30,7 +31,7 @@ export const enhanceJobDescription = async(req,res) => {
       if(!userContent){
         return res.status(400).json({message: "User content is required"});
       }
-      const response = await openai.chat.completions.create({
+      const response = await ai.chat.completions.create({
           model: process.env.OPENAI_MODEL,
           messages: [
               { role: "system", content: "You are an expert in resume writing. Your task is to enhance the job description of a resume. The job description should be only in 1-2 sentence also highlighting key responsibilities and achievements. Use action verbs and quantifiable results where possible. Make it ATS-friendly. and only return text no options or anything else." },
@@ -98,7 +99,7 @@ export const uploadResume = async(req,res) => {
             }
         ]
       }`;
-      const response = await openai.chat.completions.create({
+      const response = await ai.chat.completions.create({
           model: process.env.OPENAI_MODEL,
           messages: [
               { role: "system", content: systemPrompt },
