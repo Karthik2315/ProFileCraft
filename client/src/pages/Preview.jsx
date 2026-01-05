@@ -4,20 +4,27 @@ import { dummyResumeData } from '../assets/assets';
 import { ArrowLeft, Loader } from 'lucide-react';
 import ResumePreivew from '../components/ResumePreivew';
 import LoaderOg from '../components/LoaderOg';
+import axios from 'axios';
 
 const Preview = () => {
   const {resumeId} = useParams();
   const [isLoading,setIsLoading] = useState(true);
   const [resumeData,setResumeData] = useState(null);
   const loadResumeData = async() => {
-    setResumeData(dummyResumeData.find(resume => resume._id === resumeId || null))
-    setIsLoading(false);
+    try {
+      const {data} = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/resumes/public/${resumeId}`,{withCredentials:true});
+      setResumeData(data.resume)
+    } catch (error) {
+      console.log(error)
+    }finally{
+      setIsLoading(false);
+    }
   }
   useEffect(()=> {
     loadResumeData();
   },[])
   return resumeData ?  (
-    <div className='bg-slate-100'>
+    <div className='bg-slate-100 min-h-screen'>
       <div className='max-w-3xl mx-auto py-10'>
         <ResumePreivew data={resumeData} template={resumeData.template} accentColor={resumeData.accentColor} classes='py-4 bg-white' />
       </div>
