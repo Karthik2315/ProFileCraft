@@ -1,7 +1,10 @@
-import { BriefcaseBusiness, Delete, Plus, Sparkles, Trash } from 'lucide-react'
-import React from 'react'
+import { BriefcaseBusiness, Delete, Loader2, Plus, Sparkles, Trash } from 'lucide-react'
+import React, { useState } from 'react'
+import {toast} from 'react-hot-toast';
+import axios from 'axios';
 
 const ExperienceForm = ({data,onChange}) => {
+  const [generatingIndex,setGeneratingIndex] = useState({});
   const addExperience = () => {
     const newExperience = {
       company:"",
@@ -21,6 +24,19 @@ const ExperienceForm = ({data,onChange}) => {
     const updated = [...data];
     updated[index] = {...updated[index],[field]:value};
     onChange(updated)
+  }
+  const generateDescription = async(index) => {
+    setGeneratingIndex(prev => ({...prev,[index]:true}));
+    const experience = data[index];
+    const prompt = `enhance this job description ${experience.description} for the position of ${experience.position} at ${experience.company}`;
+    try {
+      const {data} = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/ai/enhanced-job-desc`,{userContent:prompt},{withCredentials:true});
+      updateExperience(index,"description",data.enhancedContent);
+    } catch (error) {
+      toast.error(error.message)
+    } finally{
+      setGeneratingIndex(prev => ({...prev,[index]:false}));
+    }
   }
   return (
     <div className='flex flex-col'>
@@ -74,12 +90,16 @@ const ExperienceForm = ({data,onChange}) => {
                 <div className='space-y-5'>
                     <div className='flex items-center justify-between'>
                       <label className='text-gray-500 text-md font-semibold'>Job Description</label>
-                      <button className='flex items-center gap-1 px-2 py-2 text-xs bg-purple-100 text-purple-700 rounded disabled:opacity-50 cursor-pointer hover:scale-105 transition-all duration-700 active:scale-95'>
+                      <button className='flex items-center gap-1 px-2 py-2 text-xs bg-purple-100 text-purple-700 rounded disabled:opacity-50 cursor-pointer hover:scale-105 transition-all duration-700 active:scale-95' onClick={() => generateDescription(index)} disabled={generatingIndex[index] || !experience.position || !experience.company}>
+                      {generatingIndex[index] ? (
+                        <Loader2 className='size-4 animate-spin' />
+                      ) : (
                         <Sparkles className='size-4' />
+                      )}
                         Enhance with AI
                       </button>
                     </div>
-                    <div className='mt5'>
+                    <div className='mt-5'>
                       <textarea value={experience.description || ""} onChange={(e) => updateExperience(index,"description",e.target.value)} rows={6} placeholder='Describe your key responsibilities and achievements.....' className='w-full text-sm px-3 py-2 rounded-lg resize-none border border-gray-300' />
                     </div>
                 </div>
