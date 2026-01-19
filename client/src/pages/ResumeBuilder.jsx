@@ -73,7 +73,6 @@ const ResumeBuilder = () => {
       formData.append("resumeData",JSON.stringify({public:!resumeData.public}))
       const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/api/resumes/update`,formData,{withCredentials:true});
       setResumeData({...resumeData,public:!resumeData.public})
-      toast.success(res.data.message);
     } catch (error) {
       console.log(error)
     }
@@ -94,25 +93,54 @@ const ResumeBuilder = () => {
     window.print();
   }
 
-  const saveResume = async() => {
+  const saveResume = async () => {
     try {
-      let updatedResumeData = structuredClone(resumeData);
-      if(typeof resumeData.personal_info.image === 'object')
-      {
-        delete updatedResumeData.personal_info.image
+      const updatedResumeData = JSON.parse(JSON.stringify(resumeData));
+
+      if (
+        updatedResumeData.personal_info &&
+        typeof updatedResumeData.personal_info.image === "object"
+      ) {
+        delete updatedResumeData.personal_info.image;
       }
+
       const formData = new FormData();
-      formData.append("resumeId",resumeId)
-      formData.append("resumeData",JSON.stringify(updatedResumeData))
-      removeBackGround && formData.append("removeBackground","yes");
-      typeof resumeData.personal_info.image === 'object' && formData.append("image",resumeData.personal_info.image)
-      const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/api/resumes/update`,formData,{withCredentials:true});
+      formData.append("resumeId", resumeId);
+      formData.append("resumeData", JSON.stringify(updatedResumeData));
+
+      if (removeBackGround) {
+        formData.append("removeBackground", "yes");
+      }
+
+      if (
+        resumeData.personal_info &&
+        typeof resumeData.personal_info.image === "object"
+      ) {
+        formData.append("image", resumeData.personal_info.image);
+      }
+
+      const res = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}/api/resumes/update`,
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      );
+
       setResumeData(res.data.resume);
-      toast.success(res.data.message)
+      toast.success(res.data.message);
+
     } catch (error) {
-      console.log(error)
+      console.error(error);
+      toast.error(
+        error?.response?.data?.message || "Failed to save resume"
+      );
     }
-  }
+  };
+
 
   return (
     <div className='flex flex-col bg-white/20 min-h-screen'>

@@ -115,6 +115,9 @@ export const uploadResume = async(req,res) => {
       const newResume = await Resume.create({userId,title,...parsedData})
       return res.status(200).json({resumeId:newResume._id,resume:newResume});
     } catch (error) {
-      res.status(500).json({message: "Internal server error"});
-    }
+        console.error("Upload resume error:", error);
+        res.status(500).json({
+    message: error.message || "Internal server error"
+  });
+}
 }

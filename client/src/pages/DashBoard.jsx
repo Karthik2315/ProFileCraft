@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import {FilePenLineIcon, LoaderCircleIcon, PencilIcon, PlusIcon, TrashIcon, UploadCloudIcon} from 'lucide-react'
-import { dummyResumeData } from '../assets/assets';
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import {useSelector} from 'react-redux'
@@ -52,6 +51,7 @@ const DashBoard = () => {
     setIsLoading(true)
     try {
       const resumeText = await pdfToText(resume);
+      console.log("TEXT LENGTH:", resumeText?.length);
       const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/ai/upload-resume`,{title,resumeText},{withCredentials:true});
       setTitle('');
       setResume(null);
@@ -60,8 +60,9 @@ const DashBoard = () => {
       navigate(`/app/builder/${res.data.resumeId}`)
     } catch (error) {
         toast.error(error?.response?.data?.message || error.message)
-    }
+    }finally{
     setIsLoading(false);
+    }
   }
 
   const editTitle = async(e) => {
